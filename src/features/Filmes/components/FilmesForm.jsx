@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "../../../components/buttons/Button";
+import { SelectInput } from "../../../components/Input/SelectInput";
 
 export function FilmeForm({
   titulo = "",
@@ -9,11 +10,13 @@ export function FilmeForm({
   estreia = "",
   descricao = "",
   onSubmit,
+  editando = false,
+  onCancelarEdicao,
 }) {
   const [formData, setFormData] = useState({
     titulo,
-    genero,
-    classificacao,
+    genero: "",
+    classificacao: "",
     duracao,
     estreia,
     descricao,
@@ -61,31 +64,45 @@ export function FilmeForm({
       </div>
 
       <div className="col-md-6">
-        <label htmlFor="genero" className="form-label">Gênero</label>
-        <input
-          type="text"
-          className="form-control"
+        <SelectInput
           id="genero"
-          name="genero"
+          label="Gênero"
           value={formData.genero}
           onChange={handleChange}
-          required
+          options={[
+            { value: "Livre", label: "Livre" },
+            { value: "10", label: "10 anos" },
+            { value: "12", label: "12 anos" },
+            { value: "14", label: "14 anos" },
+            { value: "16", label: "16 anos" },
+            { value: "18", label: "18 anos" },
+          ]}
         />
-        <div className="invalid-feedback">Campo obrigatório.</div>
+        {validated && !formData.genero && (
+          <div className="invalid-feedback">Selecione um gênero.</div>
+        )}
       </div>
 
       <div className="col-md-4">
-        <label htmlFor="classificacao" className="form-label">Classificação</label>
-        <input
-          type="text"
-          className="form-control"
+        <SelectInput
           id="classificacao"
-          name="classificacao"
+          label="Classificação"
           value={formData.classificacao}
           onChange={handleChange}
-          required
+          options={[
+            { value: "Ação", label: "Ação" },
+            { value: "Animação", label: "Animação" },
+            { value: "Aventura", label: "Aventura" },
+            { value: "Comédia", label: "Comédia" },
+            { value: "Drama", label: "Drama" },
+            { value: "Romance", label: "Romance" },
+            { value: "Suspense", label: "Suspense" },
+            { value: "Terror", label: "Terror" },
+          ]}
         />
-        <div className="invalid-feedback">Campo obrigatório.</div>
+        {validated && !formData.classificacao && (
+          <div className="invalid-feedback">Selecione uma classificação.</div>
+        )}
       </div>
 
       <div className="col-md-4">
@@ -131,7 +148,7 @@ export function FilmeForm({
         <div className="invalid-feedback">Escreva uma descrição.</div>
       </div>
 
-      <div className="col-12">
+      <div className="col-12 d-flex gap-2">
         <Button
           text="Salvar"
           variant="primary"
@@ -139,6 +156,15 @@ export function FilmeForm({
           type="submit"
           loading={false}
         />
+        {editando && (
+          <Button
+            text="Cancelar Edição"
+            variant="secondary"
+            size="btn-sm"
+            type="button"
+            onClick={onCancelarEdicao}
+          />
+        )}
       </div>
     </form>
   );
