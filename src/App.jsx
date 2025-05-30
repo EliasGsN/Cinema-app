@@ -1,4 +1,4 @@
-
+import './global.css';
 import { Menu } from './components/menu/Menu';
 import { AppRoutes } from './routes/AppRoutes';
 
