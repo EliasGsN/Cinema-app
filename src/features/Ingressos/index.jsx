@@ -1,8 +1,9 @@
+import { IngressosPage } from "./page/vendaIngressosPage.jsx";
+
 export function Ingressos(){
     return (
         <>
-            <h4>Ingressos</h4>
-            <hr />
+            <IngressosPage />
         </>
     );
 }
