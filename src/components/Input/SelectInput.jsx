@@ -7,24 +7,25 @@ export function SelectInput({
   disabled = false,
 }) {
   return (
-    <div className="input-group mb-3">
+    <div className="mb-3">
+      <label htmlFor={id} className="form-label">
+        {label}
+      </label>
       <select
         className="form-select"
         id={id}
+        name={id}
         value={value}
         onChange={onChange}
         disabled={disabled}
       >
-        <option value="">Choose...</option>
+        <option value="">Selecione...</option>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
         ))}
       </select>
-      <label className="input-group-text" htmlFor={id}>
-        {label}
-      </label>
     </div>
   );
 }
