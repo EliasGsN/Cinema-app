@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "../../../components/buttons/Button";
 import { SelectInput } from "../../../components/Input/SelectInput";
+import { LabelInput } from "../../../components/Input/LabelInput";
 
 export function FilmeForm({
   titulo = "",
@@ -15,15 +16,27 @@ export function FilmeForm({
 }) {
   const [formData, setFormData] = useState({
     titulo,
-    genero: "",
-    classificacao: "",
+    genero,
+    classificacao,
     duracao,
     estreia,
     descricao,
-    termos: false, // checkbox adicional
+    termos: false,
   });
 
   const [validated, setValidated] = useState(false);
+
+  useEffect(() => {
+    setFormData({
+      titulo,
+      genero,
+      classificacao,
+      duracao,
+      estreia,
+      descricao,
+      termos: false,
+    });
+  }, [titulo, genero, classificacao, duracao, estreia, descricao, editando]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -50,17 +63,13 @@ export function FilmeForm({
       onSubmit={handleSubmit}
     >
       <div className="col-md-6">
-        <label htmlFor="titulo" className="form-label">Título do Filme</label>
-        <input
-          type="text"
-          className="form-control"
+        <LabelInput
           id="titulo"
-          name="titulo"
+          label="Título do Filme"
           value={formData.titulo}
           onChange={handleChange}
           required
         />
-        <div className="invalid-feedback">Campo obrigatório.</div>
       </div>
 
       <div className="col-md-6">
@@ -106,46 +115,38 @@ export function FilmeForm({
       </div>
 
       <div className="col-md-4">
-        <label htmlFor="duracao" className="form-label">Duração (minutos)</label>
-        <input
-          type="number"
-          className="form-control"
+        <LabelInput
           id="duracao"
-          name="duracao"
+          label="Duração (minutos)"
+          type="number"
           value={formData.duracao}
           onChange={handleChange}
           required
-          min="1"
+          min={1}
         />
-        <div className="invalid-feedback">Informe a duração do filme.</div>
       </div>
 
       <div className="col-md-4">
-        <label htmlFor="estreia" className="form-label">Data de Estreia</label>
-        <input
-          type="date"
-          className="form-control"
+        <LabelInput
           id="estreia"
-          name="estreia"
+          label="Data de Estreia"
+          type="date"
           value={formData.estreia}
           onChange={handleChange}
           required
         />
-        <div className="invalid-feedback">Informe a data de estreia.</div>
       </div>
 
       <div className="col-12">
-        <label htmlFor="descricao" className="form-label">Descrição</label>
-        <textarea
-          className="form-control"
+        <LabelInput
           id="descricao"
-          name="descricao"
-          rows="4"
+          label="Descrição"
+          as="textarea"
           value={formData.descricao}
           onChange={handleChange}
           required
+          rows={4}
         />
-        <div className="invalid-feedback">Escreva uma descrição.</div>
       </div>
 
       <div className="col-12 d-flex gap-2">

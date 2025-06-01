@@ -1,8 +1,10 @@
-export function Salas(){
-    return (
-        <>
-            <h4>Salas</h4>
-            <hr />
-        </>
-    );
+// src/features/filmes/index.jsx
+import { SalasPage } from "./page/salasPage.jsx";
+
+export function Salas() {
+  return (
+    <>
+      <SalasPage/>
+    </>
+  );
 }

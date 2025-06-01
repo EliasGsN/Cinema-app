@@ -1,8 +1,10 @@
-export function Sessoes(){
-    return (
-        <>
-            <h4>Sessões</h4>
-            <hr />
-        </>
-    );
+// src/features/filmes/index.jsx
+import { SessoesPage } from "./page/sessoesPage.jsx";
+
+export function Sessoes() {
+  return (
+    <>
+      <SessoesPage/>
+    </>
+  );
 }
