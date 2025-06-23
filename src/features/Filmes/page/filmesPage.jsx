@@ -1,30 +1,57 @@
-// src/features/filmes/page/filmesPage.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FilmeForm } from "../components/FilmesForm.jsx"; 
 import { FilmesTables } from "../components/FilmesTables.jsx";
+import {
+  getFilmes,
+  createFilme,
+  updateFilme,
+  deleteFilme,
+} from "../services/filme.js";
 
 export function FilmesPage() { 
-  const [filmes, setFilmes] = useState(() => {
-    const local = localStorage.getItem("filmes");
-    return local ? JSON.parse(local) : [];
-  });
+  const [filmes, setFilmes] = useState([]);
   const [editando, setEditando] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
 
-  const handleSubmit = (dados) => {
-    if (editando !== null) {
-      const novosFilmes = filmes.map((f, idx) =>
-        (f.id || idx + 1) === editando ? { ...f, ...dados, id: editando } : f
-      );
-      setFilmes(novosFilmes);
-      localStorage.setItem("filmes", JSON.stringify(novosFilmes));
-      setEditando(null);
-    } else {
-      
-      const novoId = filmes.length > 0 ? (filmes[filmes.length - 1].id || filmes.length) + 1 : 1;
-      const novoFilme = { ...dados, id: novoId };
-      const novosFilmes = [...filmes, novoFilme];
-      setFilmes(novosFilmes);
-      localStorage.setItem("filmes", JSON.stringify(novosFilmes));
+  async function carregarFilmes() {
+    setLoading(true);
+    setErro("");
+    try {
+      const data = await getFilmes();
+      setFilmes(data);
+    } catch (e) {
+      setErro("Erro ao carregar filmes do backend");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    carregarFilmes();
+  }, []);
+
+  const handleSubmit = async (dados) => {
+    setErro("");
+    try {
+      const dadosCorrigidos = {
+        titulo: dados.titulo,
+        genero: dados.genero,
+        classificacao: dados.classificacao,
+        duracao: Number(dados.duracao),
+        dataEstreia: dados.estreia ? new Date(dados.estreia).toISOString() : undefined,
+        descricao: dados.descricao,
+      };
+      delete dadosCorrigidos.estreia;
+      if (editando !== null) {
+        await updateFilme(editando, dadosCorrigidos);
+        setEditando(null);
+      } else {
+        await createFilme(dadosCorrigidos);
+      }
+      await carregarFilmes();
+    } catch (e) {
+      setErro("Erro ao salvar filme");
     }
   };
 
@@ -32,21 +59,34 @@ export function FilmesPage() {
     setEditando(id);
   };
 
-  const handleExcluir = (id) => {
+  const handleExcluir = async (id) => {
     if (window.confirm("Tem certeza de que deseja excluir este filme?")) {
-      const novosFilmes = filmes.filter((f, idx) => (f.id || idx + 1) !== id);
-      setFilmes(novosFilmes);
-      localStorage.setItem("filmes", JSON.stringify(novosFilmes));
-      if (editando === id) setEditando(null); // cancela edição se o filme editado for excluído
+      setErro("");
+      try {
+        await deleteFilme(id);
+        if (editando === id) setEditando(null);
+        await carregarFilmes();
+      } catch (e) {
+        setErro("Erro ao excluir filme");
+        await carregarFilmes();
+      }
     }
   };
 
-  const filmeEditando = editando !== null ? filmes.find((f, idx) => (f.id || idx + 1) === editando) : undefined;
+  const filmeEditando = editando !== null ? (() => {
+    const f = filmes.find((f) => f.id === editando);
+    if (!f) return undefined;
+    return {
+      ...f,
+      estreia: f.dataEstreia ? f.dataEstreia.slice(0, 10) : '',
+    };
+  })() : undefined;
 
   return (
     <>
       <h4>Filmes</h4>
       <hr />
+      {erro && <div className="alert alert-danger">{erro}</div>}
       <FilmeForm
         {...(filmeEditando || {})}
         onSubmit={handleSubmit}
@@ -56,7 +96,11 @@ export function FilmesPage() {
       />
       <br />
       <h4>Lista de Filmes</h4>
-      <FilmesTables filmes={filmes} onEditar={handleEditar} onExcluir={handleExcluir} />
+      {loading ? (
+        <div>Carregando...</div>
+      ) : (
+        <FilmesTables filmes={filmes} onEditar={handleEditar} onExcluir={handleExcluir} />
+      )}
     </>
   );
 }

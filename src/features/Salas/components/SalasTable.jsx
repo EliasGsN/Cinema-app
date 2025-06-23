@@ -1,4 +1,4 @@
-import { Button } from "../../../components/buttons/Button";
+import { Button } from "../../../components/Buttons/Button";
 
 export function SalasTable({ salas, onEditar, onExcluir }) {
   return (
@@ -20,19 +20,19 @@ export function SalasTable({ salas, onEditar, onExcluir }) {
               <td colSpan={6} className="text-center">Nenhuma sala cadastrada.</td>
             </tr>
           ) : (
-            salas.map((sala, idx) => {
-              const id = sala.id || idx + 1;
+            salas.map((sala) => {
+              if (!sala.id) return null;
               return (
-                <tr key={id}>
-                  <td>{id}</td>
+                <tr key={sala.id}>
+                  <td>{sala.id}</td>
                   <td>{sala.nome}</td>
                   <td>{sala.capacidade}</td>
                   <td>{sala.tipo}</td>
                   <td>
-                    <Button text=" Editar" variant="warning" size="sm" icon="pencil" onClick={() => onEditar && onEditar(id)} />
+                    <Button text=" Editar" variant="warning" size="sm" icon="pencil" onClick={() => onEditar && onEditar(sala.id)} />
                   </td>
                   <td>
-                    <Button text=" Excluir" variant="danger" size="sm" icon="trash" onClick={() => onExcluir && onExcluir(id)} />
+                    <Button text=" Excluir" variant="danger" size="sm" icon="trash" onClick={() => onExcluir && onExcluir(sala.id)} />
                   </td>
                 </tr>
               );

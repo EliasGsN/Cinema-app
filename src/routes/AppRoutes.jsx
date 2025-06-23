@@ -1,5 +1,4 @@
 import {Routes, Route} from 'react-router-dom';
-
 import {Filmes} from '../features/Filmes';
 import {Salas} from '../features/Salas';
 import {Sessoes} from '../features/Sessoes';

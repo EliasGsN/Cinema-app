@@ -1,28 +1,48 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SalasForm } from "../components/SalasForm";
 import { SalasTable } from "../components/SalasTable";
+import {
+  getSalas,
+  createSala,
+  updateSala,
+  deleteSala,
+} from "../services/salaApi";
 
 export function SalasPage() {
-  const [salas, setSalas] = useState(() => {
-    const local = localStorage.getItem("salas");
-    return local ? JSON.parse(local) : [];
-  });
+  const [salas, setSalas] = useState([]);
   const [editando, setEditando] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
 
-  const handleSubmit = (dados) => {
-    if (editando !== null) {
-      const novasSalas = salas.map((s, idx) =>
-        (s.id || idx + 1) === editando ? { ...s, ...dados, id: editando } : s
-      );
-      setSalas(novasSalas);
-      localStorage.setItem("salas", JSON.stringify(novasSalas));
-      setEditando(null);
-    } else {
-      const novoId = salas.length > 0 ? (salas[salas.length - 1].id || salas.length) + 1 : 1;
-      const novaSala = { ...dados, id: novoId };
-      const novasSalas = [...salas, novaSala];
-      setSalas(novasSalas);
-      localStorage.setItem("salas", JSON.stringify(novasSalas));
+  async function carregarSalas() {
+    setLoading(true);
+    setErro("");
+    try {
+      const data = await getSalas();
+      setSalas(data);
+    } catch (e) {
+      setErro("Erro ao carregar salas do backend");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    carregarSalas();
+  }, []);
+
+  const handleSubmit = async (dados) => {
+    setErro("");
+    try {
+      if (editando !== null) {
+        await updateSala(editando, dados);
+        setEditando(null);
+      } else {
+        await createSala(dados);
+      }
+      await carregarSalas();
+    } catch (e) {
+      setErro("Erro ao salvar sala");
     }
   };
 
@@ -30,21 +50,27 @@ export function SalasPage() {
     setEditando(id);
   };
 
-  const handleExcluir = (id) => {
+  const handleExcluir = async (id) => {
     if (window.confirm("Tem certeza de que deseja excluir esta sala?")) {
-      const novasSalas = salas.filter((s, idx) => (s.id || idx + 1) !== id);
-      setSalas(novasSalas);
-      localStorage.setItem("salas", JSON.stringify(novasSalas));
-      if (editando === id) setEditando(null);
+      setErro("");
+      try {
+        await deleteSala(id);
+        if (editando === id) setEditando(null);
+        await carregarSalas();
+      } catch (e) {
+        setErro("Erro ao excluir sala");
+        await carregarSalas();
+      }
     }
   };
 
-  const salaEditando = editando !== null ? salas.find((s, idx) => (s.id || idx + 1) === editando) : undefined;
+  const salaEditando = editando !== null ? salas.find((s) => s.id === editando) : undefined;
 
   return (
     <>
       <h4>Salas</h4>
       <hr />
+      {erro && <div className="alert alert-danger">{erro}</div>}
       <SalasForm
         {...(salaEditando || {})}
         onSubmit={handleSubmit}
@@ -53,7 +79,11 @@ export function SalasPage() {
         onCancelarEdicao={() => setEditando(null)}
       />
       <br /><h4>Lista de Salas</h4>
-      <SalasTable salas={salas} onEditar={handleEditar} onExcluir={handleExcluir} />
+      {loading ? (
+        <div>Carregando...</div>
+      ) : (
+        <SalasTable salas={salas} onEditar={handleEditar} onExcluir={handleExcluir} />
+      )}
     </>
   );
 }

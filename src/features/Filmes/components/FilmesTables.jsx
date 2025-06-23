@@ -1,4 +1,4 @@
-import { Button } from '../../../components/buttons/Button';
+import { Button } from '../../../components/Buttons/Button';
 
 export function FilmesTables({ filmes = [], onEditar, onExcluir }) {
   return (
@@ -22,21 +22,21 @@ export function FilmesTables({ filmes = [], onEditar, onExcluir }) {
               <td colSpan={8} className="text-center">Nenhum filme cadastrado.</td>
             </tr>
           ) : (
-            filmes.map((filme, idx) => {
-              const id = filme.id || idx + 1;
+            filmes.map((filme) => {
+              if (!filme.id) return null;
               return (
-                <tr key={id}>
-                  <td>{id}</td>
+                <tr key={filme.id}>
+                  <td>{filme.id}</td>
                   <td>{filme.titulo}</td>
                   <td>{filme.genero}</td>
                   <td>{filme.classificacao}</td>
                   <td>{filme.duracao}</td>
-                  <td>{filme.estreia}</td>
+                  <td>{filme.dataEstreia ? new Date(filme.dataEstreia).toLocaleDateString('pt-BR') : ''}</td>
                   <td>
-                    <Button text=" Editar" variant="warning" size="sm" icon="pencil" onClick={() => onEditar && onEditar(id)} />
+                    <Button text=" Editar" variant="warning" size="sm" icon="pencil" onClick={() => onEditar && onEditar(filme.id)} />
                   </td>
                   <td>
-                    <Button text=" Excluir" variant="danger" size="sm" icon="trash" onClick={() => onExcluir && onExcluir(id)} />
+                    <Button text=" Excluir" variant="danger" size="sm" icon="trash" onClick={() => onExcluir && onExcluir(filme.id)} />
                   </td>
                 </tr>
               );

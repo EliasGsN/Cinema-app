@@ -1,4 +1,4 @@
-import { Button } from "../../../components/buttons/Button";
+import { Button } from "../../../components/Buttons/Button";
 
 export function SessaoTables({ sessoes, onEditar, onExcluir }) {
   return (
@@ -23,22 +23,22 @@ export function SessaoTables({ sessoes, onEditar, onExcluir }) {
               <td colSpan={9} className="text-center">Nenhuma sessão cadastrada.</td>
             </tr>
           ) : (
-            sessoes.map((sessao, idx) => {
-              const id = sessao.id || idx + 1;
+            sessoes.map((sessao) => {
+              if (!sessao.id) return null;
               return (
-                <tr key={id}>
-                  <td>{id}</td>
-                  <td>{sessao.filme}</td>
-                  <td>{sessao.sala}</td>
-                  <td>{sessao.horario}</td>
+                <tr key={sessao.id}>
+                  <td>{sessao.id}</td>
+                  <td>{sessao.filme && typeof sessao.filme === 'object' ? sessao.filme.titulo : sessao.filme}</td>
+                  <td>{sessao.sala && typeof sessao.sala === 'object' ? sessao.sala.nome : sessao.sala}</td>
+                  <td>{sessao.dataHora ? new Date(sessao.dataHora).toLocaleString('pt-BR') : sessao.horario}</td>
                   <td>{sessao.preco}</td>
                   <td>{sessao.idioma}</td>
                   <td>{sessao.formato}</td>
                   <td>
-                    <Button text=" Editar" variant="warning" size="sm" icon="pencil" onClick={() => onEditar && onEditar(id)} />
+                    <Button text=" Editar" variant="warning" size="sm" icon="pencil" onClick={() => onEditar && onEditar(sessao.id)} />
                   </td>
                   <td>
-                    <Button text=" Excluir" variant="danger" size="sm" icon="trash" onClick={() => onExcluir && onExcluir(id)} />
+                    <Button text=" Excluir" variant="danger" size="sm" icon="trash" onClick={() => onExcluir && onExcluir(sessao.id)} />
                   </td>
                 </tr>
               );

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Button } from "../../../components/Buttons/Button";
 import { SelectInput } from "../../../components/Input/SelectInput";
 import { LabelInput } from "../../../components/Input/LabelInput";
+import { getFilmes } from '../../Filmes/services/filmeApi';
+import { getSalas } from '../../Salas/services/salaApi';
 
 export function SessaoForm({ id, filme = "", sala = "", horario = "", preco = "", idioma = "", formato = "", onSubmit, editando = false, onCancelarEdicao }) {
   const [formData, setFormData] = useState({
@@ -14,17 +16,22 @@ export function SessaoForm({ id, filme = "", sala = "", horario = "", preco = ""
   });
   const [validated, setValidated] = useState(false);
 
-  // Carregar opções de filmes e salas do localStorage
   const [filmesOptions, setFilmesOptions] = useState([]);
   const [salasOptions, setSalasOptions] = useState([]);
 
   useEffect(() => {
-    // Carrega filmes
-    const filmes = JSON.parse(localStorage.getItem("filmes") || "[]");
-    setFilmesOptions(filmes.map(f => ({ value: f.titulo, label: f.titulo })));
-    // Carrega salas
-    const salas = JSON.parse(localStorage.getItem("salas") || "[]");
-    setSalasOptions(salas.map(s => ({ value: s.nome, label: s.nome })));
+    async function fetchOptions() {
+      try {
+        const filmes = await getFilmes();
+        setFilmesOptions(filmes.map(f => ({ value: f.id, label: f.titulo })));
+        const salas = await getSalas();
+        setSalasOptions(salas.map(s => ({ value: s.id, label: s.nome })));
+      } catch {
+        setFilmesOptions([]);
+        setSalasOptions([]);
+      }
+    }
+    fetchOptions();
   }, []);
 
   useEffect(() => {
@@ -90,7 +97,7 @@ export function SessaoForm({ id, filme = "", sala = "", horario = "", preco = ""
         <div className="invalid-feedback">Informe a data e hora.</div>
       </div>
       <div className="col-md-4">
-        <label htmlFor="preco" className="form-label">Preço</label> {/* Este não é LabelInput pq ele quebra o 'R$' */}
+        <label htmlFor="preco" className="form-label">Preço</label>
         <div className="input-group">
           <span className="input-group-text">R$</span>
           <input

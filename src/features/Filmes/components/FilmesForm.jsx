@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button } from "../../../components/buttons/Button";
+import { Button } from "../../../components/Buttons/Button";
 import { SelectInput } from "../../../components/Input/SelectInput";
 import { LabelInput } from "../../../components/Input/LabelInput";
 
@@ -50,7 +50,7 @@ export function FilmeForm({
     e.preventDefault();
 
     if (e.currentTarget.checkValidity()) {
-      onSubmit?.(formData); // chama callback se existir
+      onSubmit?.(formData);
     }
 
     setValidated(true);
@@ -79,12 +79,14 @@ export function FilmeForm({
           value={formData.genero}
           onChange={handleChange}
           options={[
-            { value: "Livre", label: "Livre" },
-            { value: "10", label: "10 anos" },
-            { value: "12", label: "12 anos" },
-            { value: "14", label: "14 anos" },
-            { value: "16", label: "16 anos" },
-            { value: "18", label: "18 anos" },
+            { value: "Ação", label: "Ação" },
+            { value: "Animação", label: "Animação" },
+            { value: "Aventura", label: "Aventura" },
+            { value: "Comédia", label: "Comédia" },
+            { value: "Drama", label: "Drama" },
+            { value: "Romance", label: "Romance" },
+            { value: "Suspense", label: "Suspense" },
+            { value: "Terror", label: "Terror" },
           ]}
         />
         {validated && !formData.genero && (
@@ -99,14 +101,12 @@ export function FilmeForm({
           value={formData.classificacao}
           onChange={handleChange}
           options={[
-            { value: "Ação", label: "Ação" },
-            { value: "Animação", label: "Animação" },
-            { value: "Aventura", label: "Aventura" },
-            { value: "Comédia", label: "Comédia" },
-            { value: "Drama", label: "Drama" },
-            { value: "Romance", label: "Romance" },
-            { value: "Suspense", label: "Suspense" },
-            { value: "Terror", label: "Terror" },
+            { value: "Livre", label: "Livre" },
+            { value: "10", label: "10 anos" },
+            { value: "12", label: "12 anos" },
+            { value: "14", label: "14 anos" },
+            { value: "16", label: "16 anos" },
+            { value: "18", label: "18 anos" },
           ]}
         />
         {validated && !formData.classificacao && (

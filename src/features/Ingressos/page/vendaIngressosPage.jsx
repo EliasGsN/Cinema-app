@@ -3,6 +3,8 @@ import { LabelInput } from '../../../components/Input/LabelInput';
 import { SelectInput } from '../../../components/Input/SelectInput';
 import { Button } from '../../../components/Buttons/Button';
 import { useLocation } from 'react-router-dom';
+import { getSessoes } from '../../Sessoes/services/sessaoApi';
+import { createIngresso } from '../services/ingresso';
 
 export function IngressosPage() {
   const [sessoes, setSessoes] = useState([]);
@@ -15,15 +17,23 @@ export function IngressosPage() {
   });
   const location = useLocation();
   const [validated, setValidated] = useState(false);
+  const [erro, setErro] = useState("");
 
   useEffect(() => {
-    const sessoesStorage = JSON.parse(localStorage.getItem('sessoes') || '[]');
-    setSessoes(sessoesStorage);
-    const params = new URLSearchParams(location.search);
-    const vendaSessao = params.get('vendaSessao');
-    if (vendaSessao && sessoesStorage.some(s => String(s.id) === String(vendaSessao))) {
-      setForm(f => ({ ...f, sessao: vendaSessao }));
+    async function fetchSessoes() {
+      try {
+        const data = await getSessoes();
+        setSessoes(data);
+        const params = new URLSearchParams(location.search);
+        const vendaSessao = params.get('vendaSessao');
+        if (vendaSessao && data.some(s => String(s.id) === String(vendaSessao))) {
+          setForm(f => ({ ...f, sessao: vendaSessao }));
+        }
+      } catch {
+        setErro('Erro ao carregar sessões do backend');
+      }
     }
+    fetchSessoes();
   }, [location.search]);
 
   function handleChange(e) {
@@ -31,29 +41,34 @@ export function IngressosPage() {
     setForm({ ...form, [name]: value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!form.nome || !form.cpf || !form.assento || !form.sessao || !form.pagamento) {
       setValidated(true);
       return;
     }
-    const ingressos = JSON.parse(localStorage.getItem('ingressos') || '[]');
-    const novaVenda = {
-      ...form,
-      id: Date.now(),
-      sessao: sessoes.find(s => String(s.id) === String(form.sessao)),
-    };
-    ingressos.push(novaVenda);
-    localStorage.setItem('ingressos', JSON.stringify(ingressos));
-    alert('Venda realizada com sucesso!');
-    setForm({ nome: '', cpf: '', assento: '', sessao: '', pagamento: '' });
-    setValidated(false);
+    setErro("");
+    try {
+      await createIngresso({
+        nome: form.nome,
+        cpf: form.cpf,
+        sessaoId: Number(form.sessao),
+        assento: form.assento,
+        formaPagamento: form.pagamento,
+      });
+      alert('Venda realizada com sucesso!');
+      setForm({ nome: '', cpf: '', assento: '', sessao: '', pagamento: '' });
+      setValidated(false);
+    } catch {
+      setErro('Erro ao registrar ingresso no backend');
+    }
   }
 
   return (
     <>
         <h4>Ingressos</h4>
         <hr />
+      {erro && <div className="alert alert-danger">{erro}</div>}
       <form className={`row g-3 needs-validation ${validated ? 'was-validated' : ''}`} noValidate onSubmit={handleSubmit}>
         <div className="row mb-2">
           <div className="col-12 col-sm-6">
@@ -74,7 +89,7 @@ export function IngressosPage() {
               required
               options={sessoes.map(sessao => ({
                 value: sessao.id,
-                label: `${sessao.filme} - Sala ${sessao.sala} - ${sessao.horario} - R$ ${Number(sessao.preco).toFixed(2)}`
+                label: `${sessao.filme && typeof sessao.filme === 'object' ? sessao.filme.titulo : sessao.filme} - Sala ${sessao.sala && typeof sessao.sala === 'object' ? sessao.sala.nome : sessao.sala} - ${sessao.dataHora ? new Date(sessao.dataHora).toLocaleString('pt-BR') : sessao.horario} - R$ ${Number(sessao.preco).toFixed(2)}`
               }))}
             />
           </div>
