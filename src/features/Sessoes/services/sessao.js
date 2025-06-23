@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:3000/sessao';
+const API_URL = '/api/sessao';
+
 
 export async function getSessoes() {
   const res = await fetch(API_URL);
