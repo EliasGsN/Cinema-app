@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Button } from "../../../components/Buttons/Button";
 import { SelectInput } from "../../../components/Input/SelectInput";
 import { LabelInput } from "../../../components/Input/LabelInput";
-import { getFilmes } from '../../Filmes/services/filmeApi';
-import { getSalas } from '../../Salas/services/salaApi';
+import { getFilmes } from '../../Filmes/services/filme';
+import { getSalas } from '../../Salas/services/sala';
 
 export function SessaoForm({ id, filme = "", sala = "", horario = "", preco = "", idioma = "", formato = "", onSubmit, editando = false, onCancelarEdicao }) {
   const [formData, setFormData] = useState({

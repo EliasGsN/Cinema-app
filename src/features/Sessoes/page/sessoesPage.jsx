@@ -6,7 +6,7 @@ import {
   createSessao,
   updateSessao,
   deleteSessao,
-} from "../services/sessaoApi";
+} from "../services/sessao";
 
 export function SessoesPage() {
   const [sessoes, setSessoes] = useState([]);

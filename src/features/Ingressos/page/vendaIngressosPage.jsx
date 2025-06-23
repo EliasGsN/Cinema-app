@@ -3,7 +3,7 @@ import { LabelInput } from '../../../components/Input/LabelInput';
 import { SelectInput } from '../../../components/Input/SelectInput';
 import { Button } from '../../../components/Buttons/Button';
 import { useLocation } from 'react-router-dom';
-import { getSessoes } from '../../Sessoes/services/sessaoApi';
+import { getSessoes } from '../../Sessoes/services/sessao';
 import { createIngresso } from '../services/ingresso';
 
 export function IngressosPage() {

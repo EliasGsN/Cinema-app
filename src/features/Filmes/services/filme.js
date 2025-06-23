@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/filmes';
+const API_URL = 'http://localhost:3000/filme';
 
 export async function getFilmes() {
   const res = await fetch(API_URL);

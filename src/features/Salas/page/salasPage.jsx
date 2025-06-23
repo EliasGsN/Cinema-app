@@ -6,7 +6,7 @@ import {
   createSala,
   updateSala,
   deleteSala,
-} from "../services/salaApi";
+} from "../services/sala";
 
 export function SalasPage() {
   const [salas, setSalas] = useState([]);

@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/salas';
+const API_URL = 'http://localhost:3000/sala';
 
 export async function getSalas() {
   const res = await fetch(API_URL);

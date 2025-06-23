@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/ingressos';
+const API_URL = 'http://localhost:3000/ingresso';
 
 export async function getIngressos() {
   const res = await fetch(API_URL);
